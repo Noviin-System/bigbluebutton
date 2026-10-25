@@ -1,0 +1,1 @@
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i hosts.ini sync_events.yml

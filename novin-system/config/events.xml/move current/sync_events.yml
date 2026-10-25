@@ -1,0 +1,39 @@
+---
+- name: ایجاد و اجرای اسکریپت همگام‌سازی فایل‌های events.xml
+  hosts: bbb_servers
+  become: yes
+  tasks:
+    - name: ایجاد فایل اسکریپت همگام‌سازی در سرور
+      copy:
+        dest: /root/sync_all_events.sh
+        mode: '0755'
+        content: |
+          #!/bin/bash
+          count=0
+          for raw_dir in /var/bigbluebutton/recording/raw/*; do
+              if [ -d "$raw_dir" ]; then
+                  meeting_id=$(basename "$raw_dir")
+                  raw_xml="$raw_dir/events.xml"
+                  pub_dir="/var/bigbluebutton/published/presentation/$meeting_id"
+                  pub_xml="$pub_dir/events.xml"
+                  
+                  if [ -f "$raw_xml" ] && [ ! -f "$pub_xml" ]; then
+                      if [ -d "$pub_dir" ]; then
+                          cp "$raw_xml" "$pub_xml"
+                          chmod 644 "$pub_xml"
+                          chown bigbluebutton:bigbluebutton "$pub_xml"
+                          count=$((count + 1))
+                      fi
+                  fi
+              fi
+          done
+          echo "operation succesful for: $count"
+
+    - name: اجرای اسکریپت همگام‌سازی
+      command:
+        cmd: /root/sync_all_events.sh
+      register: sync_output
+
+    - name: نمایش خروجی اسکریپت
+      debug:
+        msg: "{{ sync_output.stdout }}"

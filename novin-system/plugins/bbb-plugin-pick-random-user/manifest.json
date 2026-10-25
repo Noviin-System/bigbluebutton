@@ -1,0 +1,38 @@
+{
+  "requiredSdkVersion": "~0.0.92",
+  "name": "BbbPluginPickRandomUser",
+  "version": "0.0.10",
+  "javascriptEntrypointUrl": "BbbPluginPickRandomUser.js",
+  "localesBaseUrl": "locales",
+  "dataChannels": [
+    {
+      "name": "filterOptions",
+      "pushPermission": [
+        "presenter"
+      ],
+      "replaceOrDeletePermission": [
+        "creator",
+        "moderator"
+      ]
+    },
+    {
+      "name": "pickRandomUser",
+      "pushPermission": [
+        "presenter"
+      ],
+      "replaceOrDeletePermission": [
+        "creator",
+        "moderator"
+      ]
+    },
+    {
+      "name": "pickedUserSeenEntry",
+      "pushPermission": [
+        "all"
+      ],
+      "replaceOrDeletePermission": [
+        "moderator"
+      ]
+    }
+  ]
+}

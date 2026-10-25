@@ -1,0 +1,8 @@
+# ==============================================================================
+# Target Path:  /etc/cron.d/bbb-smart-restart
+# Description:  Daily conditional BBB restart at 03:00 AM Asia/Tehran
+# ==============================================================================
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 3 * * * root /usr/local/bin/bbb-smart-restart.sh > /dev/null 2>&1

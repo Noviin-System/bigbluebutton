@@ -1,0 +1,60 @@
+# Product-Ready document
+# Bucket Name: bbb-recordings
+# URL: https://s3.novin-system.com
+
+# 1. Install Rclone
+curl -O -L https://s3.novin-system.com/cdn/bbb/mirror/apps/rclone-v1.68.2-linux-amd64.zip
+unzip rclone-v1.68.2-linux-amd64.zip
+sudo cp rclone-v1.68.2-linux-amd64/rclone /usr/bin/
+sudo chown root:root /usr/bin/rclone
+sudo chmod 755 /usr/bin/rclone
+rclone --version
+
+# 2. Configure Rclone (System & BigBlueButton user)
+sudo mkdir -p /home/bigbluebutton/.config/rclone
+sudo nano /home/bigbluebutton/.config/rclone/rclone.conf
+# content in ./rclone.conf
+sudo chown -R bigbluebutton:bigbluebutton /home/bigbluebutton/.config
+sudo chmod 600 /home/bigbluebutton/.config/rclone/rclone.conf
+
+# Also link or copy to root/current user for manual CLI commands
+mkdir -p ~/.config/rclone
+sudo cp /home/bigbluebutton/.config/rclone/rclone.conf ~/.config/rclone/rclone.conf
+
+# 3. Initial sync of existing recordings
+rclone copy /var/bigbluebutton/published/presentation minio:bbb-recordings/published/presentation --progress --transfers 8 --checkers 16
+
+# 4. Nginx configuration for MinIO proxy & SPA routing
+sudo nano /usr/share/bigbluebutton/nginx/presentation.nginx
+# replace 'location /playback/presentation/' and 'location /presentation/' with: ./presentation.nginx
+sudo nginx -t && sudo systemctl reload nginx
+
+# 5. Create Core Bash Script for Upload
+sudo mkdir -p /usr/local/bigbluebutton/core/scripts/post_publish
+sudo nano /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.sh
+# content in ./post_publish_minio.sh
+
+# 6. Create Ruby Wrapper for BigBlueButton Hook Integration
+sudo nano /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.rb
+# content in ./post_publish_minio.rb
+
+# 7. Set Permissions for Logs & Scripts
+sudo touch /var/log/bigbluebutton/post_publish_minio.log
+sudo chown bigbluebutton:bigbluebutton /var/log/bigbluebutton/post_publish_minio.log
+
+sudo chmod +x /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.sh
+sudo chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.sh
+
+sudo chmod +x /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.rb
+sudo chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.rb
+
+# --- Verification & Troubleshooting Commands ---
+
+# Monitor automatic upload execution live:
+# tail -f /var/log/bigbluebutton/post_publish_minio.log
+
+# Check if a meeting exists on MinIO:
+# rclone --config /home/bigbluebutton/.config/rclone/rclone.conf ls minio:bbb-recordings/published/presentation/<MEETING_ID>/
+
+# Manually trigger the post-publish hook for a session:
+# sudo -u bigbluebutton ruby /usr/local/bigbluebutton/core/scripts/post_publish/post_publish_minio.rb -m <MEETING_ID> -f presentation

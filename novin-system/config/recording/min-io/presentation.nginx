@@ -1,0 +1,31 @@
+   location /playback/presentation/ {
+                proxy_pass https://s3.novin-system.com/bbb-recordings/published/presentation/;
+                proxy_set_header Host 195.211.46.65:9000;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                # CORS headers (Critical for bbb-playback SVG/audio/video)
+                add_header Access-Control-Allow-Origin * always;
+                add_header Access-Control-Allow-Methods "GET, OPTIONS" always;
+                add_header Access-Control-Allow-Headers "Range, Authorization, Content-Type" always;
+
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                proxy_buffering off;
+                proxy_read_timeout 600s;
+                proxy_send_timeout 600s;
+        }
+
+        location /presentation/ {
+                proxy_pass https://s3.novin-system.com/bbb-recordings/published/presentation/;
+                proxy_set_header Host 195.211.46.65:9000;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                add_header Access-Control-Allow-Origin * always;
+
+                proxy_http_version 1.1;
+                proxy_buffering off;
+        }

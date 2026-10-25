@@ -1,0 +1,10 @@
+# ==============================================================================
+# Target Path:  /etc/bigbluebutton/nginx/erp-redirect.nginx
+# Service:      nginx.service
+# Description:  Redirects ERP legacy health check endpoint (/b) to /bigbluebutton
+# Applied via:  systemctl reload nginx
+# ==============================================================================
+
+location = /b {
+    return 301 /bigbluebutton;
+}

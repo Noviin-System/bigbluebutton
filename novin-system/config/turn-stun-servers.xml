@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+==============================================================================
+Override Target: /etc/bigbluebutton/turn-stun-servers.xml
+Replaces Default: /usr/share/bbb-web/WEB-INF/classes/spring/turn-stun-servers.xml
+Applied via:      bbb-conf --restart
+==============================================================================
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<bean id="turn0" class="org.bigbluebutton.web.services.turn.TurnServer">
+		<constructor-arg index="0" value="__TURN_SECRET__"/>
+		<constructor-arg index="1" value="turn:__DOMAIN__:3478"/>
+		<constructor-arg index="2" value="86400"/>
+	</bean>
+	<bean id="turn1" class="org.bigbluebutton.web.services.turn.TurnServer">
+		<constructor-arg index="0" value="__TURN_SECRET__"/>
+		<constructor-arg index="1" value="turns:__DOMAIN__:443?transport=tcp"/>
+		<constructor-arg index="2" value="86400"/>
+	</bean>
+
+	<bean id="stunTurnService"
+            class="org.bigbluebutton.web.services.turn.StunTurnService">
+		<property name="stunServers">
+			<set>
+			</set>
+		</property>
+		<property name="turnServers">
+			<set>
+				<ref bean="turn0"/>
+				<ref bean="turn1"/>
+			</set>
+		</property>
+	</bean>
+</beans>
